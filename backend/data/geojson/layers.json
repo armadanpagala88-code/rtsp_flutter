@@ -1,0 +1,40 @@
+{
+  "kecamatan": [
+    {
+      "id": "d015cb6b-ba6f-472f-b8f4-0ff27a91c592",
+      "name": "Unaaha",
+      "color": "#2196f3",
+      "filename": "geojson_1767082708915.geojson",
+      "uploadedAt": "2025-12-30T08:18:28.917Z",
+      "originalName": "Unaaha.geojson"
+    },
+    {
+      "id": "c0b199a8-d37c-4ff9-987e-ac7e5f08b98b",
+      "name": "Anggaberi",
+      "color": "#cddc39",
+      "filename": "geojson_1767082732110.geojson",
+      "uploadedAt": "2025-12-30T08:18:52.111Z",
+      "originalName": "Anggaberi.geojson"
+    }
+  ],
+  "kelurahan": [
+    {
+      "id": "a724cd72-ea8c-45f7-844b-6f5ac27a2207",
+      "name": "Inolobunggadue",
+      "kecamatanId": "d015cb6b-ba6f-472f-b8f4-0ff27a91c592",
+      "color": "#388e3c",
+      "filename": "geojson_1767082759745.geojson",
+      "uploadedAt": "2025-12-30T08:19:19.746Z",
+      "originalName": "Inolobunggadue.geojson"
+    },
+    {
+      "id": "b682baf5-0bda-4569-a629-0519acdf64f4",
+      "name": "Puunaaha",
+      "kecamatanId": "d015cb6b-ba6f-472f-b8f4-0ff27a91c592",
+      "color": "#607d8b",
+      "filename": "geojson_1767082772221.geojson",
+      "uploadedAt": "2025-12-30T08:19:32.222Z",
+      "originalName": "Puunaaha.geojson"
+    }
+  ]
+}

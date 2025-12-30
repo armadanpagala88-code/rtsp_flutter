@@ -1,0 +1,198 @@
+{
+  "cctvList": [
+    {
+      "id": "cctv-1767022286606",
+      "name": "KEL. INOLOBUNGGADUE - SOSIAL-FIX",
+      "owner": "DISKOMINFO KONAWE",
+      "category": "PANTAU_LALIN",
+      "location": {
+        "lat": -3.8532712,
+        "lng": 122.0384614
+      },
+      "streams": [
+        {
+          "quality": "preview",
+          "url": "rtsp://admin:2025-CCTVknw@172207219718.ip-dynamic.com:6560/stream2"
+        },
+        {
+          "quality": "main",
+          "url": "rtsp://admin:2025-CCTVknw@172207219718.ip-dynamic.com:6560/stream1"
+        }
+      ],
+      "status": "online",
+      "thumbnail": "https://via.placeholder.com/320x180?text=KEL.%20INOLOBUNGGADUE%20-%20SOSIAL-FIX"
+    },
+    {
+      "id": "cctv-1767025667897",
+      "name": "KEL. INOLOBUNGGADUE-LABKESDA",
+      "owner": "DISKOMINFO KONAWE",
+      "category": "PANTAU_LALIN",
+      "location": {
+        "lat": -3.8566758,
+        "lng": 122.0393755
+      },
+      "streams": [
+        {
+          "quality": "preview",
+          "url": "rtsp://admin:2025-CCTVknw@172207219721.ip-dynamic.com:554/stream2"
+        },
+        {
+          "quality": "main",
+          "url": "rtsp://admin:2025-CCTVknw@172207219721.ip-dynamic.com:554/stream1"
+        }
+      ],
+      "status": "online",
+      "thumbnail": "https://via.placeholder.com/320x180?text=KEL.%20INOLOBUNGGADUE-LABKESDA"
+    },
+    {
+      "id": "cctv-1767025716907",
+      "name": "KEL. ASAMBU - BTN",
+      "owner": "DISKOMINFO KONAWE",
+      "category": "PANTAU_LALIN",
+      "location": {
+        "lat": -3.8498021,
+        "lng": 122.0467209
+      },
+      "streams": [
+        {
+          "quality": "preview",
+          "url": "rtsp://admin:2025-CCTVknw@172207219370.ip-dynamic.com:6559/stream2"
+        },
+        {
+          "quality": "main",
+          "url": "rtsp://admin:2025-CCTVknw@172207219370.ip-dynamic.com:6559/stream1"
+        }
+      ],
+      "status": "online",
+      "thumbnail": "https://via.placeholder.com/320x180?text=KEL.%20ASAMBU%20-%20BTN"
+    },
+    {
+      "id": "cctv-1767026004553",
+      "name": "ASINUA",
+      "owner": "Admin",
+      "category": "PANTAU_LALIN",
+      "location": {
+        "lat": -3.8539376,
+        "lng": 122.0650927
+      },
+      "streams": [
+        {
+          "quality": "preview",
+          "url": "rtsp://admin:2025-CCTVknw@172207218721.ip-dynamic.com:6555/stream2"
+        },
+        {
+          "quality": "main",
+          "url": "rtsp://admin:2025-CCTVknw@172207218721.ip-dynamic.com:6555/stream1"
+        }
+      ],
+      "status": "online",
+      "thumbnail": "https://via.placeholder.com/320x180?text=ASINUA"
+    },
+    {
+      "id": "cctv-1767026165777",
+      "name": "damkar",
+      "owner": "Admin",
+      "category": "PANTAU_LALIN",
+      "location": {
+        "lat": -3.859927,
+        "lng": 122.0497188
+      },
+      "streams": [
+        {
+          "quality": "preview",
+          "url": "rtsp://admin:2025-CCTVknw@172207219774.ip-dynamic.com:6551/stream2"
+        },
+        {
+          "quality": "main",
+          "url": "rtsp://admin:2025-CCTVknw@172207219774.ip-dynamic.com:6551/stream1"
+        }
+      ],
+      "status": "online",
+      "thumbnail": "https://via.placeholder.com/320x180?text=damkar"
+    },
+    {
+      "id": "cctv-1767026613627",
+      "name": "inalahi",
+      "owner": "Admin",
+      "category": "PANTAU_LALIN",
+      "location": {
+        "lat": -3.8692966,
+        "lng": 122.1046447
+      },
+      "streams": [
+        {
+          "quality": "preview",
+          "url": "rtsp://admin:2025-CCTVknw@172207219386.ip-dynamic.com:6551/stream2"
+        },
+        {
+          "quality": "main",
+          "url": "rtsp://admin:2025-CCTVknw@172207219386.ip-dynamic.com:6551/stream1"
+        }
+      ],
+      "status": "online",
+      "thumbnail": "https://via.placeholder.com/320x180?text=inalahi"
+    },
+    {
+      "id": "cctv-1767059574009",
+      "name": "Uepai",
+      "owner": "DISKOMINFO KONAWE",
+      "category": "PANTAU_LALIN",
+      "location": {
+        "lat": -3.8772717,
+        "lng": 122.0395437
+      },
+      "streams": [
+        {
+          "quality": "preview",
+          "url": "rtsp://admin:2025-CCTVknw@172207219469.ip-dynamic.com:6550/stream2"
+        },
+        {
+          "quality": "main",
+          "url": "rtsp://admin:2025-CCTVknw@172207219469.ip-dynamic.com:6550/stream1"
+        }
+      ],
+      "status": "online",
+      "thumbnail": "https://via.placeholder.com/320x180?text=Uepai"
+    }
+  ],
+  "categories": [
+    {
+      "id": "PANTAU_LALIN",
+      "name": "Pantau Lalin",
+      "icon": "🚗",
+      "color": "#E53935"
+    },
+    {
+      "id": "RT_RW",
+      "name": "RT RW",
+      "icon": "🏠",
+      "color": "#43A047"
+    },
+    {
+      "id": "SUNGAI",
+      "name": "Sungai",
+      "icon": "🌊",
+      "color": "#1E88E5"
+    },
+    {
+      "id": "POMPA_AIR",
+      "name": "Pantau Fasilitas Umum",
+      "icon": "🏭",
+      "color": "#00ACC1",
+      "updatedAt": "2025-12-30T00:20:20.978Z"
+    },
+    {
+      "id": "PEMERINTAHAN",
+      "name": "Kantor Pemerintahan",
+      "icon": "🏛️",
+      "color": "#8E24AA"
+    },
+    {
+      "id": "TOL",
+      "name": "Pantau Bak Sampah",
+      "icon": "🗑️",
+      "color": "#4CAF50",
+      "updatedAt": "2025-12-30T00:19:50.710Z"
+    }
+  ]
+}

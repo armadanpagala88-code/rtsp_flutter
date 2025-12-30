@@ -1,0 +1,24 @@
+{
+  "trashBins": [
+    {
+      "id": "tb-1767053887306",
+      "name": "Kel. Inolobung- Sosial",
+      "location": {
+        "lat": -3.8536296,
+        "lng": 122.0383286
+      },
+      "photoUrl": null,
+      "createdAt": "2025-12-30T00:18:07.306Z"
+    },
+    {
+      "id": "tb-1767053905472",
+      "name": "Kel. Inolobu- laabkesda",
+      "location": {
+        "lat": -3.8567719,
+        "lng": 122.0394039
+      },
+      "photoUrl": null,
+      "createdAt": "2025-12-30T00:18:25.472Z"
+    }
+  ]
+}
