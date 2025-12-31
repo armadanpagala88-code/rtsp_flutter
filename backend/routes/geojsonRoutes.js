@@ -3,7 +3,7 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 
 // Upload directory for GeoJSON files
 const geojsonDir = path.join(__dirname, '../data/geojson');
@@ -113,7 +113,7 @@ router.post('/kecamatan', upload.single('file'), (req, res) => {
 
     const metadata = readLayersMetadata();
     const newKecamatan = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         name,
         color: color || '#0000FF',
         filename: req.file.filename,
@@ -242,7 +242,7 @@ router.post('/kelurahan', upload.single('file'), (req, res) => {
     }
 
     const newKelurahan = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         name,
         kecamatanId,
         color: color || '#00FF00',
