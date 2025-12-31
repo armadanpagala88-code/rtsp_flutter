@@ -223,6 +223,7 @@ class _CctvPopupState extends State<CctvPopup> {
             ..style.border = 'none'
             ..style.backgroundColor = 'black'
             ..style.borderRadius = '12px'
+            ..style.pointerEvents = 'none'  // Allow clicks to pass through to overlay buttons
             ..allow = 'autoplay; fullscreen'
             ..src = streamUrl;
           return iframe;
@@ -241,6 +242,7 @@ class _CctvPopupState extends State<CctvPopup> {
           ..style.border = 'none'
           ..style.backgroundColor = 'black'
           ..style.borderRadius = '12px'
+          ..style.pointerEvents = 'none'  // Allow clicks to pass through to overlay buttons
           ..srcdoc = '''
             <!DOCTYPE html>
             <html>
@@ -340,6 +342,17 @@ class _CctvPopupState extends State<CctvPopup> {
   }
 
   void _toggleFullscreen() {
+    // Ensure stream is ready before opening fullscreen
+    if (_viewId.isEmpty || _isLoading) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Stream belum siap, tunggu sebentar...')),
+      );
+      return;
+    }
+
+    // Capture current viewId to use in dialog
+    final currentViewId = _viewId;
+
     showDialog(
       context: context,
       barrierColor: Colors.black87,
@@ -357,7 +370,7 @@ class _CctvPopupState extends State<CctvPopup> {
                   ignoring: false,
                   child: Container(
                     color: Colors.black,
-                    child: HtmlElementView(viewType: _viewId),
+                    child: HtmlElementView(viewType: currentViewId),
                   ),
                 ),
               ),
