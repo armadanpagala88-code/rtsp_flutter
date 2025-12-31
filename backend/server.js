@@ -13,6 +13,7 @@ const userRoutes = require('./routes/users');
 const categoryRoutes = require('./routes/categoryRoutes');
 const trashBinRoutes = require('./routes/trashBinRoutes');
 const geojsonRoutes = require('./routes/geojsonRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 // Services
 const rtspProxyService = require('./services/rtspProxy');
@@ -43,6 +44,7 @@ app.use('/api/admin/users', userRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/trash-bins', trashBinRoutes);
 app.use('/api/geojson', geojsonRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

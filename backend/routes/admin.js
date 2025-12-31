@@ -69,13 +69,16 @@ router.get('/cctv/:id', (req, res) => {
 // Create new CCTV
 router.post('/cctv', (req, res) => {
     const data = loadCctvData();
-    const { name, owner, category, lat, lng, rtspUrl, rtspUrlHd, status } = req.body;
+    // Support WebRTC (preferred), HLS, and RTSP (legacy) field names
+    const { name, owner, category, lat, lng, webrtcUrl, webrtcUrlHd, hlsUrl, hlsUrlHd, rtspUrl, rtspUrlHd, status } = req.body;
+    const streamUrl = webrtcUrl || hlsUrl || rtspUrl;
+    const streamUrlHd = webrtcUrlHd || hlsUrlHd || rtspUrlHd;
 
     // Validate required fields
-    if (!name || !rtspUrl) {
+    if (!name || !streamUrl) {
         return res.status(400).json({
             success: false,
-            error: 'Name and RTSP URL are required'
+            error: 'Name and Stream URL are required'
         });
     }
 
@@ -94,11 +97,11 @@ router.post('/cctv', (req, res) => {
         streams: [
             {
                 quality: 'preview',
-                url: rtspUrl
+                url: streamUrl
             },
             {
                 quality: 'main',
-                url: rtspUrlHd || rtspUrl
+                url: streamUrlHd || streamUrl
             }
         ],
         status: status || 'online',
@@ -127,7 +130,10 @@ router.put('/cctv/:id', (req, res) => {
         });
     }
 
-    const { name, owner, category, lat, lng, rtspUrl, rtspUrlHd, status } = req.body;
+    // Support WebRTC (preferred), HLS, and RTSP (legacy) field names
+    const { name, owner, category, lat, lng, webrtcUrl, webrtcUrlHd, hlsUrl, hlsUrlHd, rtspUrl, rtspUrlHd, status } = req.body;
+    const streamUrl = webrtcUrl || hlsUrl || rtspUrl;
+    const streamUrlHd = webrtcUrlHd || hlsUrlHd || rtspUrlHd;
     const existingCctv = data.cctvList[index];
 
     // Update fields
@@ -143,11 +149,11 @@ router.put('/cctv/:id', (req, res) => {
         streams: [
             {
                 quality: 'preview',
-                url: rtspUrl || existingCctv.streams[0]?.url
+                url: streamUrl || existingCctv.streams[0]?.url
             },
             {
                 quality: 'main',
-                url: rtspUrlHd || rtspUrl || existingCctv.streams[1]?.url
+                url: streamUrlHd || streamUrl || existingCctv.streams[1]?.url
             }
         ],
         status: status || existingCctv.status,

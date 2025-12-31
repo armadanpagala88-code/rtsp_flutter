@@ -605,5 +605,109 @@ class ApiService {
       return {'success': false, 'error': 'Gagal menghapus kelurahan'};
     }
   }
+
+  // ========== AI DETECTION OPERATIONS ==========
+
+  /// Check AI service health
+  static Future<bool> checkAiHealth() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/ai/health'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['success'] == true;
+      }
+      return false;
+    } catch (e) {
+      print('Error checking AI health: $e');
+      return false;
+    }
+  }
+
+  /// Start AI detection on a stream
+  static Future<Map<String, dynamic>> startAiDetection(String cctvId, String quality) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/ai/start'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'cctvId': cctvId,
+          'quality': quality,
+        }),
+      );
+      
+      return json.decode(response.body);
+    } catch (e) {
+      print('Error starting AI detection: $e');
+      return {
+        'success': false,
+        'error': 'Gagal memulai AI detection',
+      };
+    }
+  }
+
+  /// Stop AI detection on a stream
+  static Future<Map<String, dynamic>> stopAiDetection(String cctvId, String quality) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/ai/stop'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'cctvId': cctvId,
+          'quality': quality,
+        }),
+      );
+      
+      return json.decode(response.body);
+    } catch (e) {
+      print('Error stopping AI detection: $e');
+      return {
+        'success': false,
+        'error': 'Gagal menghentikan AI detection',
+      };
+    }
+  }
+
+  /// Get AI detection statistics for a stream
+  static Future<Map<String, dynamic>?> getAiStats(String cctvId, String quality) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/ai/stats/$cctvId?quality=$quality'),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          return data['data'];
+        }
+      }
+      return null;
+    } catch (e) {
+      print('Error getting AI stats: $e');
+      return null;
+    }
+  }
+
+  /// Get all active AI streams
+  static Future<List<String>> getActiveAiStreams() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/ai/active'));
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          return List<String>.from(data['streams'] ?? []);
+        }
+      }
+      return [];
+    } catch (e) {
+      print('Error getting active AI streams: $e');
+      return [];
+    }
+  }
+
+  /// Get AI stream URL
+  static String getAiStreamUrl(String streamId) {
+    return '$baseUrl/ai/stream/$streamId';
+  }
 }
 
