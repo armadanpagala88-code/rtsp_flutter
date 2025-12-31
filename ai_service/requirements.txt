@@ -1,0 +1,8 @@
+ultralytics
+opencv-python
+flask
+flask-cors
+numpy>=1.26.0
+pillow
+requests
+

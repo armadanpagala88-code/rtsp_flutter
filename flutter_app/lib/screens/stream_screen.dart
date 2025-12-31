@@ -18,24 +18,72 @@ class StreamScreen extends StatefulWidget {
 class _StreamScreenState extends State<StreamScreen> {
   bool _isLoading = true;
   String? _error;
-  int? _wsPort;
   String _currentQuality = 'preview';
   String _viewId = '';
+  int? _wsPort; // For RTSP via JSMpeg
 
   @override
   void initState() {
     super.initState();
-    _startStream();
+    _initStream();
   }
 
-  Future<void> _startStream() async {
+  void _initStream() {
     setState(() {
       _isLoading = true;
       _error = null;
     });
 
+    final streamUrl = _getStreamUrl();
+    
+    if (streamUrl == null || streamUrl.isEmpty) {
+      setState(() {
+        _isLoading = false;
+        _error = 'Stream URL tidak tersedia';
+      });
+      return;
+    }
+
+    // Detect stream type and initialize appropriate player
+    if (_isRtspUrl(streamUrl)) {
+      _initRtspStream();
+    } else {
+      _initHlsStream(streamUrl);
+    }
+  }
+
+  bool _isRtspUrl(String url) {
+    return url.toLowerCase().startsWith('rtsp://');
+  }
+
+  bool _isHlsUrl(String url) {
+    return url.contains('.m3u8') || 
+           url.contains('m3u8') || 
+           url.contains(':8888/') ||
+           url.contains(':8889/');
+  }
+
+  String? _getStreamUrl() {
+    if (widget.cctv.streams.isEmpty) return null;
+    
+    if (_currentQuality == 'main') {
+      final hdStream = widget.cctv.streams.firstWhere(
+        (s) => s.quality == 'main',
+        orElse: () => widget.cctv.streams[0],
+      );
+      return hdStream.url;
+    } else {
+      final previewStream = widget.cctv.streams.firstWhere(
+        (s) => s.quality == 'preview',
+        orElse: () => widget.cctv.streams[0],
+      );
+      return previewStream.url;
+    }
+  }
+
+  // Initialize RTSP stream via backend proxy (JSMpeg)
+  Future<void> _initRtspStream() async {
     try {
-      // Request stream start from backend
       final response = await http.post(
         Uri.parse('${ApiService.baseUrl}/streams/start'),
         headers: {'Content-Type': 'application/json'},
@@ -53,7 +101,7 @@ class _StreamScreenState extends State<StreamScreen> {
             _viewId = 'jsmpeg-player-${widget.cctv.id}-$_currentQuality-${DateTime.now().millisecondsSinceEpoch}';
             _isLoading = false;
           });
-          _initJsmpegPlayer();
+          _registerJsmpegPlayer();
         } else {
           throw Exception(data['error'] ?? 'Failed to start stream');
         }
@@ -68,10 +116,9 @@ class _StreamScreenState extends State<StreamScreen> {
     }
   }
 
-  void _initJsmpegPlayer() {
+  void _registerJsmpegPlayer() {
     if (_wsPort == null) return;
 
-    // Register a view factory for this stream
     // ignore: undefined_prefixed_name
     ui_web.platformViewRegistry.registerViewFactory(
       _viewId,
@@ -82,9 +129,8 @@ class _StreamScreenState extends State<StreamScreen> {
           ..style.height = '100%'
           ..style.backgroundColor = 'black';
 
-        // Initialize JSMpeg player after canvas is added to DOM
         html.window.requestAnimationFrame((_) {
-          _createJsmpegPlayer(canvas.id);
+          _createJsmpegPlayer(canvas.id!);
         });
 
         return canvas;
@@ -94,9 +140,6 @@ class _StreamScreenState extends State<StreamScreen> {
 
   void _createJsmpegPlayer(String canvasId) {
     final wsUrl = 'ws://localhost:$_wsPort';
-    
-    // Use JavaScript to create JSMpeg player
-    html.window.console.log('Creating JSMpeg player for: $wsUrl');
     
     final script = '''
       (function() {
@@ -109,45 +152,126 @@ class _StreamScreenState extends State<StreamScreen> {
             audio: false,
             videoBufferSize: 1024 * 1024,
             progressive: false,
-            chunkSize: 65536,
-            onPlay: function() {
-              console.log('JSMpeg: Stream started');
-            },
-            onStalled: function() {
-              console.log('JSMpeg: Stream stalled');
-            },
-            onEnded: function() {
-              console.log('JSMpeg: Stream ended');
-            }
+            chunkSize: 65536
           });
-          console.log('JSMpeg player created successfully');
-        } else {
-          console.error('Canvas not found or JSMpeg not loaded');
         }
       })();
     ''';
 
     final scriptElement = html.ScriptElement()..text = script;
     html.document.body?.append(scriptElement);
-    
-    // Remove script element after execution
-    Future.delayed(const Duration(milliseconds: 100), () {
-      scriptElement.remove();
-    });
+    Future.delayed(const Duration(milliseconds: 100), () => scriptElement.remove());
+  }
+
+  // Initialize HLS stream
+  void _initHlsStream(String streamUrl) {
+    try {
+      _viewId = 'hls-player-${widget.cctv.id}-$_currentQuality-${DateTime.now().millisecondsSinceEpoch}';
+      _registerHlsPlayer(streamUrl);
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = e.toString();
+      });
+    }
+  }
+
+  void _registerHlsPlayer(String streamUrl) {
+    // ignore: undefined_prefixed_name
+    ui_web.platformViewRegistry.registerViewFactory(
+      _viewId,
+      (int viewId) {
+        // WebRTC URLs (port 8889) - embed directly as iframe
+        if (streamUrl.contains(':8889/')) {
+          final iframe = html.IFrameElement()
+            ..style.width = '100%'
+            ..style.height = '100%'
+            ..style.border = 'none'
+            ..style.backgroundColor = 'black'
+            ..allow = 'autoplay; fullscreen'
+            ..src = streamUrl;
+          return iframe;
+        }
+        
+        // For MediaMTX HLS URLs on port 8888, add index.m3u8 if not present
+        String hlsUrl = streamUrl;
+        if (streamUrl.contains(':8888/') && !streamUrl.contains('.m3u8')) {
+          hlsUrl = streamUrl.endsWith('/') ? '${streamUrl}index.m3u8' : '$streamUrl/index.m3u8';
+        }
+        
+        // Check if it's an HLS URL that needs hls.js
+        final needsHlsJs = hlsUrl.contains('.m3u8') || streamUrl.contains(':8888/');
+        
+        if (needsHlsJs) {
+          // Use iframe with hls.js for .m3u8 streams
+          final iframe = html.IFrameElement()
+            ..style.width = '100%'
+            ..style.height = '100%'
+            ..style.border = 'none'
+            ..style.backgroundColor = 'black'
+            ..srcdoc = '''
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+                <style>
+                  * { margin: 0; padding: 0; }
+                  body { background: black; display: flex; align-items: center; justify-content: center; height: 100vh; }
+                  video { width: 100%; height: 100%; object-fit: contain; }
+                </style>
+              </head>
+              <body>
+                <video id="video" controls autoplay muted playsinline></video>
+                <script>
+                  var video = document.getElementById('video');
+                  var streamUrl = '$hlsUrl';
+                  
+                  if (Hls.isSupported()) {
+                    var hls = new Hls({ enableWorker: true, lowLatencyMode: true });
+                    hls.loadSource(streamUrl);
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() { video.play(); });
+                  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = streamUrl;
+                    video.addEventListener('loadedmetadata', function() { video.play(); });
+                  }
+                </script>
+              </body>
+              </html>
+            ''';
+          return iframe;
+        } else {
+          // Direct iframe for other streams
+          final iframe = html.IFrameElement()
+            ..style.width = '100%'
+            ..style.height = '100%'
+            ..style.border = 'none'
+            ..style.backgroundColor = 'black'
+            ..allow = 'autoplay; fullscreen'
+            ..src = streamUrl;
+          return iframe;
+        }
+      },
+    );
   }
 
   Future<void> _stopStream() async {
-    try {
-      await http.post(
-        Uri.parse('${ApiService.baseUrl}/streams/stop'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'cctvId': widget.cctv.id,
-          'quality': _currentQuality,
-        }),
-      );
-    } catch (e) {
-      debugPrint('Error stopping stream: $e');
+    if (_wsPort != null) {
+      try {
+        await http.post(
+          Uri.parse('${ApiService.baseUrl}/streams/stop'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'cctvId': widget.cctv.id,
+            'quality': _currentQuality,
+          }),
+        );
+      } catch (e) {
+        debugPrint('Error stopping stream: $e');
+      }
     }
   }
 
@@ -157,7 +281,7 @@ class _StreamScreenState extends State<StreamScreen> {
       setState(() {
         _currentQuality = quality;
       });
-      _startStream();
+      _initStream();
     }
   }
 
@@ -176,39 +300,27 @@ class _StreamScreenState extends State<StreamScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.cctv.name,
-              style: const TextStyle(fontSize: 16),
-            ),
+            Text(widget.cctv.name, style: const TextStyle(fontSize: 16)),
             Text(
               widget.cctv.owner,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.white.withOpacity(0.7),
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.7)),
             ),
           ],
         ),
         actions: [
-          // Status indicator
           Container(
             margin: const EdgeInsets.only(right: 16),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: widget.cctv.isOnline
-                  ? Colors.green.withOpacity(0.2)
-                  : Colors.red.withOpacity(0.2),
+              color: widget.cctv.isOnline ? Colors.green.withOpacity(0.2) : Colors.red.withOpacity(0.2),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: widget.cctv.isOnline ? Colors.green : Colors.red,
-              ),
+              border: Border.all(color: widget.cctv.isOnline ? Colors.green : Colors.red),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 8,
-                  height: 8,
+                  width: 8, height: 8,
                   decoration: BoxDecoration(
                     color: widget.cctv.isOnline ? Colors.green : Colors.red,
                     shape: BoxShape.circle,
@@ -219,8 +331,7 @@ class _StreamScreenState extends State<StreamScreen> {
                   widget.cctv.isOnline ? 'LIVE' : 'OFFLINE',
                   style: TextStyle(
                     color: widget.cctv.isOnline ? Colors.green : Colors.red,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 12, fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
@@ -230,15 +341,19 @@ class _StreamScreenState extends State<StreamScreen> {
       ),
       body: Column(
         children: [
-          // Video Player
+          // Video player with fixed 16:9 aspect ratio
           Expanded(
             flex: 2,
             child: Container(
               color: Colors.black,
-              child: _buildVideoPlayer(),
+              child: Center(
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: _buildVideoPlayer(),
+                ),
+              ),
             ),
           ),
-          // Info Section
           Expanded(
             flex: 1,
             child: Container(
@@ -246,54 +361,28 @@ class _StreamScreenState extends State<StreamScreen> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
-                ),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title
-                  Text(
-                    widget.cctv.name,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text(widget.cctv.name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
-                  Text(
-                    widget.cctv.owner,
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodySmall?.color,
-                    ),
-                  ),
+                  Text(widget.cctv.owner, style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
                   const SizedBox(height: 20),
-                  // Location info
                   Row(
                     children: [
-                      _buildInfoChip(
-                        icon: Icons.location_on,
-                        label: 'Lat: ${widget.cctv.location.lat.toStringAsFixed(4)}',
-                      ),
+                      _buildInfoChip(icon: Icons.location_on, label: 'Lat: ${widget.cctv.location.lat.toStringAsFixed(4)}'),
                       const SizedBox(width: 12),
-                      _buildInfoChip(
-                        icon: Icons.location_on,
-                        label: 'Lng: ${widget.cctv.location.lng.toStringAsFixed(4)}',
-                      ),
+                      _buildInfoChip(icon: Icons.location_on, label: 'Lng: ${widget.cctv.location.lng.toStringAsFixed(4)}'),
                     ],
                   ),
                   const Spacer(),
-                  // Quality selector
                   Row(
                     children: [
-                      Expanded(
-                        child: _buildQualityButton('Preview', _currentQuality == 'preview'),
-                      ),
+                      Expanded(child: _buildQualityButton('Preview', _currentQuality == 'preview')),
                       const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildQualityButton('HD', _currentQuality == 'main'),
-                      ),
+                      Expanded(child: _buildQualityButton('HD', _currentQuality == 'main')),
                     ],
                   ),
                 ],
@@ -313,10 +402,7 @@ class _StreamScreenState extends State<StreamScreen> {
           children: [
             CircularProgressIndicator(color: Colors.white),
             SizedBox(height: 16),
-            Text(
-              'Menghubungkan ke stream...',
-              style: TextStyle(color: Colors.white70),
-            ),
+            Text('Menghubungkan ke stream...', style: TextStyle(color: Colors.white70)),
           ],
         ),
       );
@@ -327,46 +413,26 @@ class _StreamScreenState extends State<StreamScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.error_outline,
-              color: Colors.red,
-              size: 64,
-            ),
+            const Icon(Icons.error_outline, color: Colors.red, size: 64),
             const SizedBox(height: 16),
-            const Text(
-              'Gagal streaming RTSP',
-              style: TextStyle(color: Colors.white, fontSize: 18),
-            ),
+            const Text('Gagal streaming', style: TextStyle(color: Colors.white, fontSize: 18)),
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Text(
-                _error!,
-                style: TextStyle(color: Colors.white.withOpacity(0.5)),
-                textAlign: TextAlign.center,
-              ),
+              child: Text(_error!, style: TextStyle(color: Colors.white.withOpacity(0.5)), textAlign: TextAlign.center),
             ),
             const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: _startStream,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Coba Lagi'),
-            ),
+            ElevatedButton.icon(onPressed: _initStream, icon: const Icon(Icons.refresh), label: const Text('Coba Lagi')),
           ],
         ),
       );
     }
 
-    if (_wsPort != null && _viewId.isNotEmpty) {
+    if (_viewId.isNotEmpty) {
       return HtmlElementView(viewType: _viewId);
     }
 
-    return const Center(
-      child: Text(
-        'Stream tidak tersedia',
-        style: TextStyle(color: Colors.white70),
-      ),
-    );
+    return const Center(child: Text('Stream tidak tersedia', style: TextStyle(color: Colors.white70)));
   }
 
   Widget _buildInfoChip({required IconData icon, required String label}) {
@@ -381,13 +447,7 @@ class _StreamScreenState extends State<StreamScreen> {
         children: [
           Icon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 6),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
+          Text(label, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary)),
         ],
       ),
     );
@@ -395,20 +455,12 @@ class _StreamScreenState extends State<StreamScreen> {
 
   Widget _buildQualityButton(String label, bool isActive) {
     return ElevatedButton(
-      onPressed: () {
-        _switchQuality(label == 'HD' ? 'main' : 'preview');
-      },
+      onPressed: () => _switchQuality(label == 'HD' ? 'main' : 'preview'),
       style: ElevatedButton.styleFrom(
-        backgroundColor: isActive
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).cardColor,
-        foregroundColor: isActive
-            ? Colors.white
-            : Theme.of(context).textTheme.bodyMedium?.color,
+        backgroundColor: isActive ? Theme.of(context).colorScheme.primary : Theme.of(context).cardColor,
+        foregroundColor: isActive ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color,
         padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       child: Text(label),
     );

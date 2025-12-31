@@ -1,0 +1,73 @@
+{
+    "model": {
+        "type": "yolov8n.pt",
+        "confidence_threshold": 0.5,
+        "iou_threshold": 0.45
+    },
+    "classes": {
+        "container": {
+            "coco_ids": [
+                39
+            ],
+            "label": "Bak Sampah",
+            "color": [
+                0,
+                0,
+                255
+            ],
+            "keywords": [
+                "bottle",
+                "cup",
+                "bowl"
+            ]
+        },
+        "sampah_overload": {
+            "label": "Sampah_Overload",
+            "color": [
+                255,
+                255,
+                255
+            ],
+            "text_color": [
+                0,
+                0,
+                139
+            ],
+            "keywords": [
+                "overload",
+                "overflow",
+                "full"
+            ]
+        },
+        "sampah_berserakan": {
+            "coco_ids": [
+                44,
+                45,
+                46,
+                47,
+                73
+            ],
+            "label": "Sampah_Berserakan",
+            "color": [
+                0,
+                255,
+                255
+            ],
+            "keywords": [
+                "trash",
+                "garbage",
+                "waste"
+            ]
+        }
+    },
+    "streaming": {
+        "fps": 15,
+        "quality": 80,
+        "max_width": 1280,
+        "max_height": 720
+    },
+    "server": {
+        "host": "0.0.0.0",
+        "port": 5001
+    }
+}

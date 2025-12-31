@@ -17,7 +17,7 @@ class MultiStreamScreen extends StatefulWidget {
 }
 
 class _MultiStreamScreenState extends State<MultiStreamScreen> {
-  int _gridSize = 2; // 2x2 grid
+  int _gridSize = 2;
 
   @override
   Widget build(BuildContext context) {
@@ -31,17 +31,12 @@ class _MultiStreamScreenState extends State<MultiStreamScreen> {
 
         return Column(
           children: [
-            // Grid size selector
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  Text(
-                    '${selectedCctvs.length} CCTV dipilih',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  Text('${selectedCctvs.length} CCTV dipilih', style: const TextStyle(fontWeight: FontWeight.bold)),
                   const Spacer(),
-                  // Grid size buttons
                   _buildGridSizeButton(1, '1'),
                   const SizedBox(width: 8),
                   _buildGridSizeButton(2, '2x2'),
@@ -50,7 +45,6 @@ class _MultiStreamScreenState extends State<MultiStreamScreen> {
                 ],
               ),
             ),
-            // Grid view
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8),
@@ -68,18 +62,10 @@ class _MultiStreamScreenState extends State<MultiStreamScreen> {
                     return _StreamTile(
                       key: ValueKey('tile-${cctv.id}'),
                       cctv: cctv,
-                      onRemove: () {
-                        provider.removeFromSelection(cctv);
-                      },
-                      onExpand: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => StreamScreen(
-                              cctv: cctv,
-                            ),
-                          ),
-                        );
-                      },
+                      onRemove: () => provider.removeFromSelection(cctv),
+                      onExpand: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => StreamScreen(cctv: cctv)),
+                      ),
                     );
                   },
                 ),
@@ -104,46 +90,23 @@ class _MultiStreamScreenState extends State<MultiStreamScreen> {
                   color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.grid_view,
-                  size: 64,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+                child: Icon(Icons.grid_view, size: 64, color: Theme.of(context).colorScheme.primary),
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Multi Stream',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              const Text('Multi Stream', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              Text(
-                'Pilih beberapa CCTV dari peta\nuntuk menampilkan multi-stream',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Theme.of(context).textTheme.bodySmall?.color,
-                ),
-              ),
+              Text('Pilih beberapa CCTV dari peta\nuntuk menampilkan multi-stream',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
               const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      // Navigate to map is handled by bottom nav in HomeScreen
-                    },
-                    icon: const Icon(Icons.map),
-                    label: const Text('Buka Peta'),
-                  ),
+                  ElevatedButton.icon(onPressed: () {}, icon: const Icon(Icons.map), label: const Text('Buka Peta')),
                   const SizedBox(width: 16),
                   ElevatedButton.icon(
                     onPressed: () => _showAddCctvDialog(context, provider),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                    ),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
                     icon: const Icon(Icons.add),
                     label: const Text('Tambah CCTV'),
                   ),
@@ -161,13 +124,7 @@ class _MultiStreamScreenState extends State<MultiStreamScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Row(
-            children: [
-              Icon(Icons.videocam, color: Colors.red),
-              SizedBox(width: 8),
-              Text('Pilih CCTV'),
-            ],
-          ),
+          title: const Row(children: [Icon(Icons.videocam, color: Colors.red), SizedBox(width: 8), Text('Pilih CCTV')]),
           content: SizedBox(
             width: double.maxFinite,
             height: 400,
@@ -179,36 +136,19 @@ class _MultiStreamScreenState extends State<MultiStreamScreen> {
                 return ListTile(
                   leading: CircleAvatar(
                     backgroundColor: cctv.isOnline ? Colors.green : Colors.grey,
-                    child: Icon(
-                      cctv.isOnline ? Icons.videocam : Icons.videocam_off,
-                      color: Colors.white,
-                      size: 18,
-                    ),
+                    child: Icon(cctv.isOnline ? Icons.videocam : Icons.videocam_off, color: Colors.white, size: 18),
                   ),
-                  title: Text(
-                    cctv.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  title: Text(cctv.name, style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Text(cctv.owner),
                   trailing: Checkbox(
                     value: isSelected,
                     onChanged: (value) {
-                      if (value == true) {
-                        provider.addToSelection(cctv);
-                      } else {
-                        provider.removeFromSelection(cctv);
-                      }
-                      // Rebuild dialog
+                      value == true ? provider.addToSelection(cctv) : provider.removeFromSelection(cctv);
                       (context as Element).markNeedsBuild();
                     },
                   ),
                   onTap: () {
-                    if (isSelected) {
-                      provider.removeFromSelection(cctv);
-                    } else {
-                      provider.addToSelection(cctv);
-                    }
-                    // Rebuild dialog
+                    isSelected ? provider.removeFromSelection(cctv) : provider.addToSelection(cctv);
                     (context as Element).markNeedsBuild();
                   },
                 );
@@ -216,14 +156,9 @@ class _MultiStreamScreenState extends State<MultiStreamScreen> {
             ),
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Tutup'),
-            ),
+            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Tutup')),
             ElevatedButton.icon(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
               icon: const Icon(Icons.check),
               label: Text('Lihat ${provider.selectedCctvs.length} CCTV'),
             ),
@@ -240,16 +175,10 @@ class _MultiStreamScreenState extends State<MultiStreamScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).cardColor,
+          color: isActive ? Theme.of(context).colorScheme.primary : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Text(label,
-            style: TextStyle(
-              color: isActive ? Colors.white : null,
-              fontWeight: isActive ? FontWeight.bold : null,
-            )),
+        child: Text(label, style: TextStyle(color: isActive ? Colors.white : null, fontWeight: isActive ? FontWeight.bold : null)),
       ),
     );
   }
@@ -260,12 +189,7 @@ class _StreamTile extends StatefulWidget {
   final VoidCallback onRemove;
   final VoidCallback onExpand;
 
-  const _StreamTile({
-    super.key,
-    required this.cctv,
-    required this.onRemove,
-    required this.onExpand,
-  });
+  const _StreamTile({super.key, required this.cctv, required this.onRemove, required this.onExpand});
 
   @override
   State<_StreamTile> createState() => _StreamTileState();
@@ -274,30 +198,46 @@ class _StreamTile extends StatefulWidget {
 class _StreamTileState extends State<_StreamTile> {
   bool _isLoading = true;
   String? _error;
-  int? _wsPort;
   String? _viewId;
+  int? _wsPort;
 
   @override
   void initState() {
     super.initState();
-    _startStream();
+    _initStream();
   }
 
-  Future<void> _startStream() async {
+  void _initStream() {
     if (!mounted) return;
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
+    setState(() { _isLoading = true; _error = null; });
 
+    final streamUrl = _getStreamUrl();
+    if (streamUrl == null || streamUrl.isEmpty) {
+      setState(() { _isLoading = false; _error = 'Stream URL tidak tersedia'; });
+      return;
+    }
+
+    if (_isRtspUrl(streamUrl)) {
+      _initRtspStream();
+    } else {
+      _initHlsStream(streamUrl);
+    }
+  }
+
+  bool _isRtspUrl(String url) => url.toLowerCase().startsWith('rtsp://');
+
+  String? _getStreamUrl() {
+    if (widget.cctv.streams.isEmpty) return null;
+    final previewStream = widget.cctv.streams.firstWhere((s) => s.quality == 'preview', orElse: () => widget.cctv.streams[0]);
+    return previewStream.url;
+  }
+
+  Future<void> _initRtspStream() async {
     try {
       final response = await http.post(
         Uri.parse('${ApiService.baseUrl}/streams/start'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'cctvId': widget.cctv.id,
-          'quality': 'preview',
-        }),
+        body: json.encode({'cctvId': widget.cctv.id, 'quality': 'preview'}),
       );
 
       if (response.statusCode == 200) {
@@ -306,13 +246,8 @@ class _StreamTileState extends State<_StreamTile> {
           if (!mounted) return;
           final wsPort = data['data']['wsPort'];
           final viewId = 'jsmpeg-multi-${widget.cctv.id}-${DateTime.now().millisecondsSinceEpoch}';
-          
-          setState(() {
-            _wsPort = wsPort;
-            _viewId = viewId;
-            _isLoading = false;
-          });
-          _initJsmpegPlayer();
+          setState(() { _wsPort = wsPort; _viewId = viewId; _isLoading = false; });
+          _registerJsmpegPlayer(viewId, wsPort);
         } else {
           throw Exception(data['error'] ?? 'Failed to start stream');
         }
@@ -321,20 +256,15 @@ class _StreamTileState extends State<_StreamTile> {
       }
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-        _error = e.toString();
-      });
+      setState(() { _isLoading = false; _error = e.toString(); });
     }
   }
 
-  void _initJsmpegPlayer() {
-    if (_wsPort == null || _viewId == null) return;
-
+  void _registerJsmpegPlayer(String viewId, int wsPort) {
     // ignore: undefined_prefixed_name
     ui_web.platformViewRegistry.registerViewFactory(
-      _viewId!,
-      (int viewId) {
+      viewId,
+      (int id) {
         final canvasId = 'canvas-multi-${widget.cctv.id}-${DateTime.now().millisecondsSinceEpoch}';
         final canvas = html.CanvasElement()
           ..id = canvasId
@@ -342,9 +272,19 @@ class _StreamTileState extends State<_StreamTile> {
           ..style.height = '100%'
           ..style.backgroundColor = 'black';
 
-        // Delay player creation to ensure canvas is in DOM
         Future.delayed(const Duration(milliseconds: 300), () {
-          _createJsmpegPlayer(canvasId);
+          final wsUrl = 'ws://localhost:$wsPort';
+          final script = '''
+            (function() {
+              var canvas = document.getElementById('$canvasId');
+              if (canvas && typeof JSMpeg !== 'undefined') {
+                new JSMpeg.Player('$wsUrl', { canvas: canvas, autoplay: true, loop: false, audio: false, videoBufferSize: 512 * 1024 });
+              }
+            })();
+          ''';
+          final scriptElement = html.ScriptElement()..text = script;
+          html.document.body?.append(scriptElement);
+          Future.delayed(const Duration(milliseconds: 200), () => scriptElement.remove());
         });
 
         return canvas;
@@ -352,62 +292,99 @@ class _StreamTileState extends State<_StreamTile> {
     );
   }
 
-  void _createJsmpegPlayer(String canvasId) {
-    final wsUrl = 'ws://localhost:$_wsPort';
-    
-    final script = '''
-      (function() {
-        console.log('MultiStream: Attempting to create player for canvas: $canvasId');
-        var canvas = document.getElementById('$canvasId');
-        
-        if (!canvas) {
-          console.error('MultiStream: Canvas not found: $canvasId');
-          return;
-        }
-        
-        if (typeof JSMpeg === 'undefined') {
-          console.error('MultiStream: JSMpeg library not loaded');
-          return;
-        }
-        
-        console.log('MultiStream: Creating JSMpeg player for $wsUrl');
-        var player = new JSMpeg.Player('$wsUrl', {
-          canvas: canvas,
-          autoplay: true,
-          loop: false,
-          audio: false,
-          videoBufferSize: 512 * 1024,
-          progressive: false,
-          chunkSize: 32768,
-          onPlay: function() { 
-            console.log('MultiStream: Playing $canvasId'); 
-          },
-          onStalled: function() {
-            console.warn('MultiStream: Stalled $canvasId');
-          }
-        });
-        
-        console.log('MultiStream: Player created for $canvasId', player);
-      })();
-    ''';
+  void _initHlsStream(String streamUrl) {
+    try {
+      final viewId = 'hls-multi-${widget.cctv.id}-${DateTime.now().millisecondsSinceEpoch}';
+      _registerHlsPlayer(viewId, streamUrl);
+      if (!mounted) return;
+      setState(() { _viewId = viewId; _isLoading = false; });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() { _isLoading = false; _error = e.toString(); });
+    }
+  }
 
-    final scriptElement = html.ScriptElement()..text = script;
-    html.document.body?.append(scriptElement);
-    Future.delayed(const Duration(milliseconds: 200), () => scriptElement.remove());
+  void _registerHlsPlayer(String viewId, String streamUrl) {
+    // ignore: undefined_prefixed_name
+    ui_web.platformViewRegistry.registerViewFactory(
+      viewId,
+      (int id) {
+        // WebRTC URLs (port 8889) - embed directly as iframe
+        if (streamUrl.contains(':8889/')) {
+          final iframe = html.IFrameElement()
+            ..style.width = '100%'
+            ..style.height = '100%'
+            ..style.border = 'none'
+            ..style.backgroundColor = 'black'
+            ..allow = 'autoplay; fullscreen'
+            ..src = streamUrl;
+          return iframe;
+        }
+        
+        // For MediaMTX HLS URLs on port 8888, add index.m3u8 if not present
+        String hlsUrl = streamUrl;
+        if (streamUrl.contains(':8888/') && !streamUrl.contains('.m3u8')) {
+          hlsUrl = streamUrl.endsWith('/') ? '${streamUrl}index.m3u8' : '$streamUrl/index.m3u8';
+        }
+        
+        final needsHlsJs = hlsUrl.contains('.m3u8') || streamUrl.contains(':8888/');
+        
+        if (needsHlsJs) {
+          final iframe = html.IFrameElement()
+            ..style.width = '100%'
+            ..style.height = '100%'
+            ..style.border = 'none'
+            ..style.backgroundColor = 'black'
+            ..srcdoc = '''
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+                <style>* { margin: 0; padding: 0; } body { background: black; height: 100vh; } video { width: 100%; height: 100%; object-fit: contain; }</style>
+              </head>
+              <body>
+                <video id="video" autoplay muted playsinline></video>
+                <script>
+                  var video = document.getElementById('video');
+                  if (Hls.isSupported()) {
+                    var hls = new Hls({ enableWorker: true, lowLatencyMode: true });
+                    hls.loadSource('$hlsUrl');
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() { video.play(); });
+                  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = '$hlsUrl';
+                    video.addEventListener('loadedmetadata', function() { video.play(); });
+                  }
+                </script>
+              </body>
+              </html>
+            ''';
+          return iframe;
+        } else {
+          final iframe = html.IFrameElement()
+            ..style.width = '100%'
+            ..style.height = '100%'
+            ..style.border = 'none'
+            ..style.backgroundColor = 'black'
+            ..allow = 'autoplay; fullscreen'
+            ..src = streamUrl;
+          return iframe;
+        }
+      },
+    );
   }
 
   Future<void> _stopStream() async {
-    try {
-      await http.post(
-        Uri.parse('${ApiService.baseUrl}/streams/stop'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'cctvId': widget.cctv.id,
-          'quality': 'preview',
-        }),
-      );
-    } catch (e) {
-      debugPrint('Error stopping stream: $e');
+    if (_wsPort != null) {
+      try {
+        await http.post(
+          Uri.parse('${ApiService.baseUrl}/streams/stop'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({'cctvId': widget.cctv.id, 'quality': 'preview'}),
+        );
+      } catch (e) {
+        debugPrint('Error stopping stream: $e');
+      }
     }
   }
 
@@ -423,54 +400,37 @@ class _StreamTileState extends State<_StreamTile> {
       borderRadius: BorderRadius.circular(12),
       child: Stack(
         children: [
-          // Content
+          // Wrap video content with IgnorePointer to allow overlay buttons to work
           Positioned.fill(
-            child: Container(
-              color: Colors.black,
-              child: _buildContent(),
+            child: IgnorePointer(
+              child: Container(
+                color: Colors.black,
+                child: _buildContent(),
+              ),
             ),
           ),
-          // Header
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: _buildHeader(),
-          ),
-          // Controls
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: _buildControls(),
-          ),
+          Positioned(top: 0, left: 0, right: 0, child: _buildHeader()),
+          Positioned(bottom: 0, left: 0, right: 0, child: _buildControls()),
         ],
       ),
     );
   }
 
   Widget _buildContent() {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-    }
+    if (_isLoading) return const Center(child: CircularProgressIndicator(strokeWidth: 2));
     if (_error != null) {
       return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.error_outline, color: Colors.red, size: 24),
-              const SizedBox(height: 4),
-              Text('Gagal muat', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 10)),
-            ],
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 24),
+            const SizedBox(height: 4),
+            Text('Gagal muat', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 10)),
+          ],
         ),
       );
     }
-    if (_viewId != null) {
-      return HtmlElementView(viewType: _viewId!);
-    }
+    if (_viewId != null) return HtmlElementView(viewType: _viewId!);
     return Container();
   }
 
@@ -478,33 +438,17 @@ class _StreamTileState extends State<_StreamTile> {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.black.withOpacity(0.7), Colors.transparent],
-        ),
+        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black.withOpacity(0.7), Colors.transparent]),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: widget.cctv.isOnline ? Colors.red : Colors.grey,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              widget.cctv.isOnline ? 'LIVE' : 'OFFLINE',
-              style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-            ),
+            decoration: BoxDecoration(color: widget.cctv.isOnline ? Colors.red : Colors.grey, borderRadius: BorderRadius.circular(4)),
+            child: Text(widget.cctv.isOnline ? 'LIVE' : 'OFFLINE', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              widget.cctv.name,
-              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+          Expanded(child: Text(widget.cctv.name, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis)),
         ],
       ),
     );
@@ -514,11 +458,7 @@ class _StreamTileState extends State<_StreamTile> {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-          colors: [Colors.black.withOpacity(0.7), Colors.transparent],
-        ),
+        gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [Colors.black.withOpacity(0.7), Colors.transparent]),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -536,10 +476,7 @@ class _StreamTileState extends State<_StreamTile> {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: (color ?? Colors.white).withOpacity(0.2),
-          borderRadius: BorderRadius.circular(6),
-        ),
+        decoration: BoxDecoration(color: (color ?? Colors.white).withOpacity(0.2), borderRadius: BorderRadius.circular(6)),
         child: Icon(icon, color: color ?? Colors.white, size: 18),
       ),
     );

@@ -20,12 +20,37 @@ class AdminScreen extends StatefulWidget {
 
 class _AdminScreenState extends State<AdminScreen> {
   List<Cctv> _cctvList = [];
+  List<Cctv> _filteredCctvList = [];
   bool _isLoading = true;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     _loadCctvList();
+    _searchController.addListener(_filterCctvList);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterCctvList() {
+    setState(() {
+      _searchQuery = _searchController.text.toLowerCase();
+      if (_searchQuery.isEmpty) {
+        _filteredCctvList = _cctvList;
+      } else {
+        _filteredCctvList = _cctvList.where((cctv) {
+          return cctv.name.toLowerCase().contains(_searchQuery) ||
+                 cctv.owner.toLowerCase().contains(_searchQuery) ||
+                 cctv.category.toLowerCase().contains(_searchQuery);
+        }).toList();
+      }
+    });
   }
 
   Future<void> _loadCctvList() async {
@@ -34,8 +59,10 @@ class _AdminScreenState extends State<AdminScreen> {
       final list = await ApiService.getAllCctv();
       setState(() {
         _cctvList = list;
+        _filteredCctvList = list;
         _isLoading = false;
       });
+      _filterCctvList();
     } catch (e) {
       setState(() => _isLoading = false);
     }
@@ -114,65 +141,91 @@ class _AdminScreenState extends State<AdminScreen> {
               ),
               child: SafeArea(
                 bottom: false,
-                child: Row(
+                child: Column(
                   children: [
-                    const Icon(Icons.admin_panel_settings),
-                    const SizedBox(width: 10),
-                    const Text(
-                      'Admin - Kelola CCTV',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    Row(
+                      children: [
+                        const Icon(Icons.admin_panel_settings),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'Admin - Kelola CCTV',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        // Navigate to User Admin
+                        IconButton(
+                          icon: const Icon(Icons.people),
+                          tooltip: 'Kelola User',
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const UserAdminScreen()),
+                            );
+                          },
+                        ),
+                        // Navigate to Category Admin
+                        IconButton(
+                          icon: const Icon(Icons.category),
+                          tooltip: 'Kelola Kategori',
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const CategoryAdminScreen()),
+                            );
+                          },
+                        ),
+                        // Navigate to Trash Bin Admin
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline),
+                          tooltip: 'Kelola Bak Sampah',
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const TrashBinAdminScreen()),
+                            );
+                          },
+                        ),
+                        // Navigate to GeoJSON Admin
+                        IconButton(
+                          icon: const Icon(Icons.map),
+                          tooltip: 'Kelola Layer GeoJSON',
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const GeoJsonAdminScreen()),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.refresh),
+                          onPressed: _loadCctvList,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    // Search Bar
+                    TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Cari CCTV...',
+                        prefixIcon: const Icon(Icons.search, size: 20),
+                        suffixIcon: _searchQuery.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear, size: 20),
+                                onPressed: () {
+                                  _searchController.clear();
+                                },
+                              )
+                            : null,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        isDense: true,
                       ),
-                    ),
-                    const Spacer(),
-                    // Navigate to User Admin
-                    IconButton(
-                      icon: const Icon(Icons.people),
-                      tooltip: 'Kelola User',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const UserAdminScreen()),
-                        );
-                      },
-                    ),
-                    // Navigate to Category Admin
-                    IconButton(
-                      icon: const Icon(Icons.category),
-                      tooltip: 'Kelola Kategori',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const CategoryAdminScreen()),
-                        );
-                      },
-                    ),
-                    // Navigate to Trash Bin Admin
-                    IconButton(
-                      icon: const Icon(Icons.delete_outline),
-                      tooltip: 'Kelola Bak Sampah',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const TrashBinAdminScreen()),
-                        );
-                      },
-                    ),
-                    // Navigate to GeoJSON Admin
-                    IconButton(
-                      icon: const Icon(Icons.map),
-                      tooltip: 'Kelola Layer GeoJSON',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const GeoJsonAdminScreen()),
-                        );
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      onPressed: _loadCctvList,
                     ),
                   ],
                 ),
@@ -184,7 +237,9 @@ class _AdminScreenState extends State<AdminScreen> {
                   ? const Center(child: CircularProgressIndicator())
                   : _cctvList.isEmpty
                       ? _buildEmptyState()
-                      : _buildCctvList(),
+                      : _filteredCctvList.isEmpty
+                          ? _buildNoResultsState()
+                          : _buildCctvList(),
             ),
           ],
         ),
@@ -228,92 +283,89 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
+  Widget _buildNoResultsState() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.search_off, size: 48, color: Colors.grey[400]),
+          const SizedBox(height: 12),
+          Text('Tidak ada hasil untuk "$_searchQuery"', style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCctvList() {
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: _cctvList.length,
+      padding: const EdgeInsets.all(12),
+      itemCount: _filteredCctvList.length,
       itemBuilder: (context, index) {
-        final cctv = _cctvList[index];
+        final cctv = _filteredCctvList[index];
         final category = Categories.getById(cctv.category);
 
         return Card(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: const EdgeInsets.only(bottom: 8),
           child: ListTile(
-            contentPadding: const EdgeInsets.all(12),
+            dense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             leading: Container(
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
                 color: (category?.color ?? Colors.red).withOpacity(0.2),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
                 cctv.isOnline ? Icons.videocam : Icons.videocam_off,
                 color: category?.color ?? Colors.red,
+                size: 20,
               ),
             ),
             title: Text(
               cctv.name,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   cctv.owner,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 11),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                       decoration: BoxDecoration(
                         color: (category?.color ?? Colors.red).withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(3),
                       ),
                       child: Text(
                         category?.name ?? cctv.category,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: category?.color ?? Colors.red,
-                        ),
+                        style: TextStyle(fontSize: 9, color: category?.color ?? Colors.red),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                       decoration: BoxDecoration(
-                        color: cctv.isOnline
-                            ? Colors.green.withOpacity(0.2)
-                            : Colors.red.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(4),
+                        color: cctv.isOnline ? Colors.green.withOpacity(0.2) : Colors.red.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(3),
                       ),
                       child: Text(
                         cctv.isOnline ? 'Online' : 'Offline',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: cctv.isOnline ? Colors.green : Colors.red,
-                        ),
+                        style: TextStyle(fontSize: 9, color: cctv.isOnline ? Colors.green : Colors.red),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
-                  'RTSP: ${cctv.streams.isNotEmpty ? cctv.streams[0].url : "N/A"}',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[500],
-                    fontFamily: 'monospace',
-                  ),
+                  'Stream: ${cctv.streams.isNotEmpty ? cctv.streams[0].url : "N/A"}',
+                  style: TextStyle(fontSize: 9, color: Colors.grey[500], fontFamily: 'monospace'),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -323,12 +375,17 @@ class _AdminScreenState extends State<AdminScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.blue),
+                  icon: const Icon(Icons.edit, color: Colors.blue, size: 18),
                   onPressed: () => _showAddEditDialog(cctv: cctv),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
+                const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
+                  icon: const Icon(Icons.delete, color: Colors.red, size: 18),
                   onPressed: () => _deleteCctv(cctv),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
               ],
             ),
@@ -357,8 +414,8 @@ class _CctvFormDialogState extends State<CctvFormDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _ownerController = TextEditingController();
-  final _rtspUrlController = TextEditingController();
-  final _rtspUrlHdController = TextEditingController();
+  final _streamUrlController = TextEditingController();
+  final _streamUrlHdController = TextEditingController();
   final _latController = TextEditingController();
   final _lngController = TextEditingController();
 
@@ -382,9 +439,9 @@ class _CctvFormDialogState extends State<CctvFormDialog> {
       _latController.text = cctv.location.lat.toString();
       _lngController.text = cctv.location.lng.toString();
       if (cctv.streams.isNotEmpty) {
-        _rtspUrlController.text = cctv.streams[0].url;
+        _streamUrlController.text = cctv.streams[0].url;
         if (cctv.streams.length > 1) {
-          _rtspUrlHdController.text = cctv.streams[1].url;
+          _streamUrlHdController.text = cctv.streams[1].url;
         }
       }
     } else {
@@ -432,8 +489,8 @@ class _CctvFormDialogState extends State<CctvFormDialog> {
   void dispose() {
     _nameController.dispose();
     _ownerController.dispose();
-    _rtspUrlController.dispose();
-    _rtspUrlHdController.dispose();
+    _streamUrlController.dispose();
+    _streamUrlHdController.dispose();
     _latController.dispose();
     _lngController.dispose();
     super.dispose();
@@ -452,10 +509,10 @@ class _CctvFormDialogState extends State<CctvFormDialog> {
         'status': _selectedStatus,
         'lat': double.tryParse(_latController.text) ?? -3.8513609,
         'lng': double.tryParse(_lngController.text) ?? 122.0338782,
-        'rtspUrl': _rtspUrlController.text,
-        'rtspUrlHd': _rtspUrlHdController.text.isNotEmpty
-            ? _rtspUrlHdController.text
-            : _rtspUrlController.text,
+        'hlsUrl': _streamUrlController.text,
+        'hlsUrlHd': _streamUrlHdController.text.isNotEmpty
+            ? _streamUrlHdController.text
+            : _streamUrlController.text,
       };
 
       if (isEditing) {
@@ -561,26 +618,26 @@ class _CctvFormDialogState extends State<CctvFormDialog> {
                       ),
                       const SizedBox(height: 16),
 
-                      // RTSP URL
+                      // Stream URL (WebRTC)
                       TextFormField(
-                        controller: _rtspUrlController,
+                        controller: _streamUrlController,
                         decoration: const InputDecoration(
-                          labelText: 'RTSP URL (Preview) *',
-                          hintText: 'rtsp://user:pass@ip:port/stream',
+                          labelText: 'WebRTC URL (Preview) *',
+                          hintText: 'http://72.61.213.95:8889/cam01/',
                           prefixIcon: Icon(Icons.link),
                           border: OutlineInputBorder(),
                         ),
                         validator: (v) =>
-                            v?.isEmpty == true ? 'RTSP URL wajib diisi' : null,
+                            v?.isEmpty == true ? 'WebRTC URL wajib diisi' : null,
                       ),
                       const SizedBox(height: 16),
 
-                      // RTSP URL HD
+                      // WebRTC URL HD
                       TextFormField(
-                        controller: _rtspUrlHdController,
+                        controller: _streamUrlHdController,
                         decoration: const InputDecoration(
-                          labelText: 'RTSP URL (HD/Main)',
-                          hintText: 'Kosongkan jika sama dengan preview',
+                          labelText: 'WebRTC URL (HD/Main)',
+                          hintText: 'http://72.61.213.95:8889/cam01/',
                           prefixIcon: Icon(Icons.hd),
                           border: OutlineInputBorder(),
                         ),
