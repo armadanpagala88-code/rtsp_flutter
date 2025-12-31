@@ -4,10 +4,12 @@ import '../models/cctv.dart';
 import '../models/category.dart';
 
 class ApiService {
-  // Change this to your backend URL
+  // Backend URL - Coolify VPS
+  static const String baseUrl = 'http://hwg88ckg8k0cgss0ww00kcok.72.61.213.95.sslip.io/api';
+  
+  // Localhost alternatives (for development):
   // static const String baseUrl = 'http://10.0.2.2:3000/api'; // Android emulator
-  static const String baseUrl = 'http://localhost:3000/api'; // Web / iOS simulator
-  // static const String baseUrl = 'http://YOUR_SERVER_IP:3000/api'; // Production
+  // static const String baseUrl = 'http://localhost:3000/api'; // Web / iOS simulator
 
   /// Get all CCTV cameras
   static Future<List<Cctv>> getAllCctv({String? category, String? status}) async {
