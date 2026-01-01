@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final List<Widget> _pages = [
+  List<Widget> get _pages => [
     const MapScreen(),
     MultiStreamScreen(onNavigateToMap: () => setState(() => _currentIndex = 0)),
   ];
