@@ -10,7 +10,9 @@ import '../services/api_service.dart';
 import 'stream_screen.dart';
 
 class MultiStreamScreen extends StatefulWidget {
-  const MultiStreamScreen({super.key});
+  final VoidCallback onNavigateToMap;
+  
+  const MultiStreamScreen({super.key, required this.onNavigateToMap});
 
   @override
   State<MultiStreamScreen> createState() => _MultiStreamScreenState();
@@ -102,7 +104,11 @@ class _MultiStreamScreenState extends State<MultiStreamScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton.icon(onPressed: () {}, icon: const Icon(Icons.map), label: const Text('Buka Peta')),
+                  ElevatedButton.icon(
+                    onPressed: widget.onNavigateToMap,
+                    icon: const Icon(Icons.map),
+                    label: const Text('Buka Peta'),
+                  ),
                   const SizedBox(width: 16),
                   ElevatedButton.icon(
                     onPressed: () => _showAddCctvDialog(context, provider),

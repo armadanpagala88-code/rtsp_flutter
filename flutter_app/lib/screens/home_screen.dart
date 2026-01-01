@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [
     const MapScreen(),
-    const MultiStreamScreen(),
+    MultiStreamScreen(onNavigateToMap: () => setState(() => _currentIndex = 0)),
   ];
 
   @override
