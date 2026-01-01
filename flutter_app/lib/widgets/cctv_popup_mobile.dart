@@ -23,7 +23,7 @@ class CctvPopup extends StatefulWidget {
 }
 
 class _CctvPopupState extends State<CctvPopup> {
-  bool _showStream = false;
+  bool _showStream = true; // Auto-play when popup opens
   String _currentQuality = 'preview';
 
   String? _getStreamUrl() {
@@ -46,7 +46,7 @@ class _CctvPopupState extends State<CctvPopup> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 320,
+      width: 480,
       decoration: BoxDecoration(
         color: const Color(0xFF162544),
         borderRadius: BorderRadius.circular(16),
@@ -124,7 +124,7 @@ class _CctvPopupState extends State<CctvPopup> {
     final streamUrl = _getStreamUrl();
     
     return Container(
-      height: 180,
+      height: 320,
       color: Colors.black,
       child: _showStream && streamUrl != null && widget.cctv.isOnline
           ? Stack(
