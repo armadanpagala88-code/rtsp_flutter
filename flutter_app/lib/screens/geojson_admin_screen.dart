@@ -40,6 +40,8 @@ class _GeoJsonAdminScreenState extends State<GeoJsonAdminScreen> {
   Future<void> _showAddKecamatanDialog() async {
     final nameController = TextEditingController();
     Color selectedColor = Colors.blue;
+    double lineWidth = 2.0;
+    double fillOpacity = 0.4;
 
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
@@ -81,6 +83,46 @@ class _GeoJsonAdminScreenState extends State<GeoJsonAdminScreen> {
                   heading: const SizedBox(),
                   subheading: const SizedBox(),
                 ),
+                const SizedBox(height: 16),
+                const Text('Ketebalan Garis:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Slider(
+                        value: lineWidth,
+                        min: 1.0,
+                        max: 5.0,
+                        divisions: 8,
+                        label: '${lineWidth.toStringAsFixed(1)} px',
+                        onChanged: (value) => setDialogState(() => lineWidth = value),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 50,
+                      child: Text('${lineWidth.toStringAsFixed(1)} px', textAlign: TextAlign.center),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const Text('Opacity Fill:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Slider(
+                        value: fillOpacity,
+                        min: 0.0,
+                        max: 1.0,
+                        divisions: 10,
+                        label: '${(fillOpacity * 100).toInt()}%',
+                        onChanged: (value) => setDialogState(() => fillOpacity = value),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 50,
+                      child: Text('${(fillOpacity * 100).toInt()}%', textAlign: TextAlign.center),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -100,6 +142,8 @@ class _GeoJsonAdminScreenState extends State<GeoJsonAdminScreen> {
                 Navigator.pop(context, {
                   'name': nameController.text,
                   'color': '#${selectedColor.value.toRadixString(16).substring(2)}',
+                  'lineWidth': lineWidth,
+                  'fillOpacity': fillOpacity,
                 });
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
@@ -171,6 +215,8 @@ class _GeoJsonAdminScreenState extends State<GeoJsonAdminScreen> {
     final nameController = TextEditingController();
     String? selectedKecamatanId = _kecamatanList.first['id'];
     Color selectedColor = Colors.green;
+    double lineWidth = 2.0;
+    double fillOpacity = 0.3;
 
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
@@ -228,6 +274,46 @@ class _GeoJsonAdminScreenState extends State<GeoJsonAdminScreen> {
                   heading: const SizedBox(),
                   subheading: const SizedBox(),
                 ),
+                const SizedBox(height: 16),
+                const Text('Ketebalan Garis:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Slider(
+                        value: lineWidth,
+                        min: 1.0,
+                        max: 5.0,
+                        divisions: 8,
+                        label: '${lineWidth.toStringAsFixed(1)} px',
+                        onChanged: (value) => setDialogState(() => lineWidth = value),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 50,
+                      child: Text('${lineWidth.toStringAsFixed(1)} px', textAlign: TextAlign.center),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const Text('Opacity Fill:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Slider(
+                        value: fillOpacity,
+                        min: 0.0,
+                        max: 1.0,
+                        divisions: 10,
+                        label: '${(fillOpacity * 100).toInt()}%',
+                        onChanged: (value) => setDialogState(() => fillOpacity = value),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 50,
+                      child: Text('${(fillOpacity * 100).toInt()}%', textAlign: TextAlign.center),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -248,6 +334,8 @@ class _GeoJsonAdminScreenState extends State<GeoJsonAdminScreen> {
                   'name': nameController.text,
                   'kecamatanId': selectedKecamatanId,
                   'color': '#${selectedColor.value.toRadixString(16).substring(2)}',
+                  'lineWidth': lineWidth,
+                  'fillOpacity': fillOpacity,
                 });
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
