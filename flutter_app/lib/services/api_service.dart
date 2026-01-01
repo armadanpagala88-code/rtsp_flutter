@@ -47,7 +47,11 @@ class ApiService {
       }
 
       print('Fetching CCTV from: $url');
-      final response = await http.get(Uri.parse(url));
+      // Include JWT token if available for authenticated access to stream URLs
+      final response = await http.get(
+        Uri.parse(url),
+        headers: _getHeaders(),
+      );
       
       print('API Response Code: ${response.statusCode}');
       
