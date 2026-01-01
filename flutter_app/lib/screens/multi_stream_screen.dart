@@ -316,6 +316,7 @@ class _StreamTileState extends State<_StreamTile> {
             ..style.height = '100%'
             ..style.border = 'none'
             ..style.backgroundColor = 'black'
+            ..style.pointerEvents = 'none' // Allow overlay buttons to work
             ..allow = 'autoplay; fullscreen'
             ..src = streamUrl;
           return iframe;
@@ -335,6 +336,7 @@ class _StreamTileState extends State<_StreamTile> {
             ..style.height = '100%'
             ..style.border = 'none'
             ..style.backgroundColor = 'black'
+            ..style.pointerEvents = 'none' // Allow overlay buttons to work
             ..srcdoc = '''
               <!DOCTYPE html>
               <html>
@@ -366,6 +368,7 @@ class _StreamTileState extends State<_StreamTile> {
             ..style.height = '100%'
             ..style.border = 'none'
             ..style.backgroundColor = 'black'
+            ..style.pointerEvents = 'none' // Allow overlay buttons to work
             ..allow = 'autoplay; fullscreen'
             ..src = streamUrl;
           return iframe;
