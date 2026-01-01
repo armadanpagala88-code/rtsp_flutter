@@ -138,7 +138,7 @@ class _MapScreenState extends State<MapScreen> {
                   return PolygonLayer(
                     polygons: _buildPolygonsFromGeoJson(
                       _kecamatanData[kec['id']]!,
-                      color.withOpacity(0.3),
+                      color.withOpacity(0.4), // Fill color with 40% opacity
                       color,
                     ),
                   );
@@ -152,7 +152,7 @@ class _MapScreenState extends State<MapScreen> {
                   return PolygonLayer(
                     polygons: _buildPolygonsFromGeoJson(
                       _kelurahanData[kel['id']]!,
-                      color.withOpacity(0.2),
+                      color.withOpacity(0.3), // Fill color with 30% opacity
                       color,
                     ),
                   );
