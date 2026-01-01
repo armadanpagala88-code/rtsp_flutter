@@ -197,7 +197,7 @@ class ApiService {
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/admin/cctv/$id'),
-        headers: {'Content-Type': 'application/json'},
+        headers: _getHeaders(),
         body: json.encode(data),
       );
       
@@ -217,6 +217,7 @@ class ApiService {
     try {
       final response = await http.delete(
         Uri.parse('$baseUrl/admin/cctv/$id'),
+        headers: _getHeaders(),
       );
       
       if (response.statusCode == 200) {
