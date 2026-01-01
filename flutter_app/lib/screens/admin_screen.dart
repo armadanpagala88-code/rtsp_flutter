@@ -618,28 +618,30 @@ class _CctvFormDialogState extends State<CctvFormDialog> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Stream URL (WebRTC)
+                      // Stream URL (HLS)
                       TextFormField(
                         controller: _streamUrlController,
                         decoration: const InputDecoration(
-                          labelText: 'WebRTC URL (Preview) *',
-                          hintText: 'http://72.61.213.95:8889/cam01/',
+                          labelText: 'HLS URL (Preview) *',
+                          hintText: 'http://72.61.213.95:8888/cam01/',
                           prefixIcon: Icon(Icons.link),
                           border: OutlineInputBorder(),
+                          helperText: 'Format: http://server:8888/stream_name/',
                         ),
                         validator: (v) =>
-                            v?.isEmpty == true ? 'WebRTC URL wajib diisi' : null,
+                            v?.isEmpty == true ? 'HLS URL wajib diisi' : null,
                       ),
                       const SizedBox(height: 16),
 
-                      // WebRTC URL HD
+                      // HLS URL HD
                       TextFormField(
                         controller: _streamUrlHdController,
                         decoration: const InputDecoration(
-                          labelText: 'WebRTC URL (HD/Main)',
-                          hintText: 'http://72.61.213.95:8889/cam01/',
+                          labelText: 'HLS URL (HD/Main)',
+                          hintText: 'http://72.61.213.95:8888/cam01/',
                           prefixIcon: Icon(Icons.hd),
                           border: OutlineInputBorder(),
+                          helperText: 'Opsional - untuk kualitas tinggi',
                         ),
                       ),
                       const SizedBox(height: 16),
