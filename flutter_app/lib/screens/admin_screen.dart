@@ -9,7 +9,7 @@ import 'package:latlong2/latlong.dart';
 import 'category_admin_screen.dart';
 import 'trash_bin_admin_screen.dart';
 import 'user_admin_screen.dart';
-import 'geojson_admin_screen.dart';
+import 'geojson_admin_export.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});

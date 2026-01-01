@@ -154,12 +154,20 @@ app.use((err, req, res, next) => {
     });
 });
 
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({
-        success: false,
-        error: 'Route not found'
-    });
+// Serve Flutter Web frontend from public folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// SPA fallback - serve index.html for non-API routes
+app.get('*', (req, res) => {
+    // If it's an API route that wasn't found, return 404 JSON
+    if (req.path.startsWith('/api/')) {
+        return res.status(404).json({
+            success: false,
+            error: 'API route not found'
+        });
+    }
+    // For all other routes, serve the Flutter web app
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;

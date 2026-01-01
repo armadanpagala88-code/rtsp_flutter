@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cctv_provider.dart';
 import 'map_screen.dart';
-import 'multi_stream_screen.dart';
+import 'multi_stream_export.dart';
 import 'admin_screen.dart';
 import 'login_screen.dart';
 import '../widgets/category_sidebar.dart';
@@ -28,6 +28,12 @@ class _HomeScreenState extends State<HomeScreen> {
     const MapScreen(),
     MultiStreamScreen(onNavigateToMap: _navigateToMap),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // CCTV data is loaded via CctvProvider in main.dart
+  }
 
   @override
   Widget build(BuildContext context) {

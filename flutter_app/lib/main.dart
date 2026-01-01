@@ -22,9 +22,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => CctvProvider(),
+      create: (_) {
+        final provider = CctvProvider();
+        // Auto-fetch data from VPS API on startup
+        provider.initialize();
+        return provider;
+      },
       child: MaterialApp(
-        title: 'CCTV Streaming',
+        title: 'CCTV BERSAHAJA',
         debugShowCheckedModeBanner: false,
         theme: _buildLightTheme(),
         darkTheme: _buildDarkTheme(),

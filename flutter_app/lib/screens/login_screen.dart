@@ -30,16 +30,20 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final success = await Provider.of<CctvProvider>(context, listen: false)
-          .login(_usernameController.text, _passwordController.text);
+      final provider = Provider.of<CctvProvider>(context, listen: false);
+      final success = await provider.login(
+        _usernameController.text.trim(),
+        _passwordController.text,
+      );
       
       if (!mounted) return;
       
       if (!success) {
-        setState(() => _errorMessage = 'Username atau password salah');
+        // Show actual error from provider, not hardcoded message
+        setState(() => _errorMessage = provider.error ?? 'Login gagal');
       }
     } catch (e) {
-      setState(() => _errorMessage = 'Terjadi kesalahan. Coba lagi.');
+      setState(() => _errorMessage = 'Error: $e');
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);

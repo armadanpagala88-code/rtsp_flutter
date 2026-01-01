@@ -7,7 +7,7 @@ import 'dart:convert';
 import '../models/cctv.dart';
 import '../providers/cctv_provider.dart';
 import '../services/api_service.dart';
-import 'stream_screen.dart';
+import 'stream_screen_export.dart';
 
 class MultiStreamScreen extends StatefulWidget {
   final VoidCallback onNavigateToMap;

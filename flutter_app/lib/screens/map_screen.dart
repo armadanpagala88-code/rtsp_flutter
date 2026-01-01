@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../models/cctv.dart';
 import '../models/category.dart';
 import '../providers/cctv_provider.dart';
-import '../widgets/cctv_popup.dart';
+import '../widgets/cctv_popup_export.dart';
 import '../widgets/map_layer_selector.dart';
 import '../services/api_service.dart';
 

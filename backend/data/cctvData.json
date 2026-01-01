@@ -56,11 +56,11 @@
       "streams": [
         {
           "quality": "preview",
-          "url": "rtsp://admin:2025-CCTVknw@172207219370.ip-dynamic.com:6559/stream2"
+          "url": "rtsp://admin:2025-CCTVknw@172207219370.ip-dynamic.com:6560/stream2"
         },
         {
           "quality": "main",
-          "url": "rtsp://admin:2025-CCTVknw@172207219370.ip-dynamic.com:6559/stream1"
+          "url": "rtsp://admin:2025-CCTVknw@172207219370.ip-dynamic.com:6560/stream2"
         }
       ],
       "status": "online",
@@ -78,7 +78,7 @@
       "streams": [
         {
           "quality": "preview",
-          "url": "rtsp://admin:2025-CCTVknw@172207218721.ip-dynamic.com:6555/stream2"
+          "url": "http://72.61.213.95:8889/cam02"
         },
         {
           "quality": "main",
@@ -100,11 +100,11 @@
       "streams": [
         {
           "quality": "preview",
-          "url": "rtsp://admin:2025-CCTVknw@172207219774.ip-dynamic.com:6551/stream2"
+          "url": "rtsp://admin:2025-CCTVknw@172207219774.ip-dynamic.com:6550/stream2"
         },
         {
           "quality": "main",
-          "url": "rtsp://admin:2025-CCTVknw@172207219774.ip-dynamic.com:6551/stream1"
+          "url": "rtsp://admin:2025-CCTVknw@172207219774.ip-dynamic.com:6550/stream1"
         }
       ],
       "status": "online",
@@ -122,11 +122,11 @@
       "streams": [
         {
           "quality": "preview",
-          "url": "rtsp://admin:2025-CCTVknw@172207219386.ip-dynamic.com:6551/stream2"
+          "url": "rtsp://72.61.213.95:8554/cam02"
         },
         {
           "quality": "main",
-          "url": "rtsp://admin:2025-CCTVknw@172207219386.ip-dynamic.com:6551/stream1"
+          "url": "http://72.61.213.95:8888/cam14/"
         }
       ],
       "status": "online",
@@ -153,6 +153,72 @@
       ],
       "status": "online",
       "thumbnail": "https://via.placeholder.com/320x180?text=Uepai"
+    },
+    {
+      "id": "cctv-1767097709163",
+      "name": "Labkesda 2",
+      "owner": "Admin",
+      "category": "PANTAU_LALIN",
+      "location": {
+        "lat": -3.8569562,
+        "lng": 122.0393427
+      },
+      "streams": [
+        {
+          "quality": "preview",
+          "url": "rtsp://admin:2025-CCTVknw@172207219721.ip-dynamic.com:555/stream2"
+        },
+        {
+          "quality": "main",
+          "url": "rtsp://admin:2025-CCTVknw@172207219721.ip-dynamic.com:555/stream1"
+        }
+      ],
+      "status": "online",
+      "thumbnail": "https://via.placeholder.com/320x180?text=Labkesda%202"
+    },
+    {
+      "id": "cctv-1767138375814",
+      "name": "tes",
+      "owner": "Admin",
+      "category": "PANTAU_LALIN",
+      "location": {
+        "lat": -3.8544559,
+        "lng": 122.0425659
+      },
+      "streams": [
+        {
+          "quality": "preview",
+          "url": "http://72.61.213.95:8888/cam02"
+        },
+        {
+          "quality": "main",
+          "url": "http://72.61.213.95:8888/cam02"
+        }
+      ],
+      "status": "online",
+      "thumbnail": "https://via.placeholder.com/320x180?text=tes"
+    },
+    {
+      "id": "cctv-1767189911506",
+      "name": "KEL. INOLOBUNGGAEDUE - PTZ",
+      "owner": "DISKOMINFO KONAWE",
+      "category": "PANTAU_LALIN",
+      "location": {
+        "lat": -3.8538414,
+        "lng": 122.0383495
+      },
+      "streams": [
+        {
+          "quality": "preview",
+          "url": "http://72.61.213.95:8888/cam04/"
+        },
+        {
+          "quality": "main",
+          "url": "http://72.61.213.95:8888/cam04/"
+        }
+      ],
+      "status": "online",
+      "thumbnail": "https://via.placeholder.com/320x180?text=KEL.%20INOLOBUNGGAEDUE%20-%20PTZ"
     }
   ],
   "categories": [

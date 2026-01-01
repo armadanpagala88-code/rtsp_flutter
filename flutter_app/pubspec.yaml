@@ -33,6 +33,10 @@ dependencies:
   # Utils
   url_launcher: ^6.2.4
   flex_color_picker: ^3.8.0
+  
+  # Platform-specific (Android/iOS)
+  webview_flutter: ^4.10.0
+  file_picker: ^8.1.6
 
 dev_dependencies:
   flutter_test:

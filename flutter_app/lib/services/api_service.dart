@@ -46,19 +46,29 @@ class ApiService {
         url += '?${queryParams.entries.map((e) => '${e.key}=${e.value}').join('&')}';
       }
 
+      print('Fetching CCTV from: $url');
       final response = await http.get(Uri.parse(url));
+      
+      print('API Response Code: ${response.statusCode}');
       
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['success'] == true) {
-          return (data['data'] as List)
+          final list = (data['data'] as List)
               .map((item) => Cctv.fromJson(item))
               .toList();
+          print('Loaded ${list.length} CCTV cameras');
+          return list;
+        } else {
+           print('API Error: Data success is false');
+           return [];
         }
+      } else {
+        print('API Error: ${response.statusCode} - ${response.body}');
+        return [];
       }
-      return [];
     } catch (e) {
-      print('Error fetching CCTV: $e');
+      print('API Exception: $e');
       return [];
     }
   }
@@ -234,6 +244,9 @@ class ApiService {
   /// Login admin
   static Future<Map<String, dynamic>> login(String username, String password) async {
     try {
+      print('LOGIN: Attempting login for user: $username');
+      print('LOGIN: URL: $baseUrl/auth/login');
+      
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login'),
         headers: {'Content-Type': 'application/json'},
@@ -241,21 +254,25 @@ class ApiService {
           'username': username,
           'password': password,
         }),
-      );
+      ).timeout(const Duration(seconds: 30));
+      
+      print('LOGIN: Response status: ${response.statusCode}');
+      print('LOGIN: Response body: ${response.body}');
       
       final result = json.decode(response.body);
       
       // Save token if login successful
       if (result['success'] == true && result['data']?['token'] != null) {
         setAuthToken(result['data']['token']);
+        print('LOGIN: Token saved successfully');
       }
       
       return result;
     } catch (e) {
-      print('Error logging in: $e');
+      print('LOGIN: Error: $e');
       return {
         'success': false,
-        'error': 'Gagal terhubung ke server',
+        'error': 'Gagal terhubung ke server: $e',
       };
     }
   }

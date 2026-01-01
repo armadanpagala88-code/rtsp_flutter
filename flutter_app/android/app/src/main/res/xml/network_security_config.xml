@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Allow cleartext traffic to our VPS API -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">72.61.213.95.sslip.io</domain>
+        <domain includeSubdomains="true">72.61.213.95</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain>
+    </domain-config>
+    
+    <!-- Base config - also allow cleartext for development -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
+</network-security-config>
