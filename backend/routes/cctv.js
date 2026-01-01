@@ -30,7 +30,8 @@ router.get('/categories', (req, res) => {
 });
 
 // Get all CCTV
-// Optional auth - if authenticated, show streams; otherwise hide them
+// NOTE: Stream URLs should use HLS (no credentials) instead of RTSP (with credentials)
+// HLS URLs like http://72.61.213.95:8888/cam03/ are safe to expose publicly
 router.get('/', (req, res) => {
     const { category, status, search } = req.query;
     const data = loadCctvData();
@@ -56,39 +57,10 @@ router.get('/', (req, res) => {
         );
     }
 
-    // Check if user is authenticated (has valid JWT token)
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    let isAuthenticated = false;
-
-    if (token) {
-        try {
-            const jwt = require('jsonwebtoken');
-            const JWT_SECRET = process.env.JWT_SECRET || 'cctv-streaming-secret-key-2024';
-            jwt.verify(token, JWT_SECRET);
-            isAuthenticated = true;
-        } catch (err) {
-            // Invalid token - treat as unauthenticated
-            isAuthenticated = false;
-        }
-    }
-
-    // If NOT authenticated, hide stream URLs (they contain credentials)
-    if (!isAuthenticated) {
-        filtered = filtered.map(cctv => {
-            const { streams, ...safeData } = cctv;
-            return {
-                ...safeData,
-                streams: [] // Hide streams for public access
-            };
-        });
-    }
-
     res.json({
         success: true,
         count: filtered.length,
-        data: filtered,
-        authenticated: isAuthenticated
+        data: filtered
     });
 });
 
@@ -104,32 +76,9 @@ router.get('/:id', (req, res) => {
         });
     }
 
-    // Check if user is authenticated
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    let isAuthenticated = false;
-
-    if (token) {
-        try {
-            const jwt = require('jsonwebtoken');
-            const JWT_SECRET = process.env.JWT_SECRET || 'cctv-streaming-secret-key-2024';
-            jwt.verify(token, JWT_SECRET);
-            isAuthenticated = true;
-        } catch (err) {
-            isAuthenticated = false;
-        }
-    }
-
-    // Hide streams if not authenticated
-    let responseData = cctv;
-    if (!isAuthenticated) {
-        const { streams, ...safeData } = cctv;
-        responseData = { ...safeData, streams: [] };
-    }
-
     res.json({
         success: true,
-        data: responseData
+        data: cctv
     });
 });
 
