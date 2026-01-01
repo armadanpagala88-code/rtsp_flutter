@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
+const { authenticateToken } = require('../middleware/auth');
 
 // Data file path
 const dataFilePath = path.join(__dirname, '../data/cctvData.json');
@@ -38,8 +39,8 @@ if (!fs.existsSync(dataFilePath)) {
     saveCctvData({ cctvList, categories });
 }
 
-// Get all CCTV (for admin)
-router.get('/cctv', (req, res) => {
+// Get all CCTV (for admin) - PROTECTED
+router.get('/cctv', authenticateToken, (req, res) => {
     const data = loadCctvData();
     res.json({
         success: true,
@@ -48,8 +49,8 @@ router.get('/cctv', (req, res) => {
     });
 });
 
-// Get single CCTV by ID
-router.get('/cctv/:id', (req, res) => {
+// Get single CCTV by ID - PROTECTED
+router.get('/cctv/:id', authenticateToken, (req, res) => {
     const data = loadCctvData();
     const cctv = data.cctvList.find(c => c.id === req.params.id);
 
@@ -66,8 +67,8 @@ router.get('/cctv/:id', (req, res) => {
     });
 });
 
-// Create new CCTV
-router.post('/cctv', (req, res) => {
+// Create new CCTV - PROTECTED
+router.post('/cctv', authenticateToken, (req, res) => {
     const data = loadCctvData();
     // Support WebRTC (preferred), HLS, and RTSP (legacy) field names
     const { name, owner, category, lat, lng, webrtcUrl, webrtcUrlHd, hlsUrl, hlsUrlHd, rtspUrl, rtspUrlHd, status } = req.body;
@@ -118,8 +119,8 @@ router.post('/cctv', (req, res) => {
     });
 });
 
-// Update CCTV
-router.put('/cctv/:id', (req, res) => {
+// Update CCTV - PROTECTED
+router.put('/cctv/:id', authenticateToken, (req, res) => {
     const data = loadCctvData();
     const index = data.cctvList.findIndex(c => c.id === req.params.id);
 
@@ -170,8 +171,8 @@ router.put('/cctv/:id', (req, res) => {
     });
 });
 
-// Delete CCTV
-router.delete('/cctv/:id', (req, res) => {
+// Delete CCTV - PROTECTED
+router.delete('/cctv/:id', authenticateToken, (req, res) => {
     const data = loadCctvData();
     const index = data.cctvList.findIndex(c => c.id === req.params.id);
 

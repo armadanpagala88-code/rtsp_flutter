@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
+const { generateToken } = require('../middleware/auth');
 
 const usersFilePath = path.join(__dirname, '../data/users.json');
 
@@ -16,13 +17,16 @@ router.post('/login', (req, res) => {
         const user = users.find(u => u.username === username && u.password === password);
 
         if (user) {
+            // Generate JWT token
+            const token = generateToken(user);
+
             return res.json({
                 success: true,
                 message: 'Login successful',
                 data: {
                     username: user.username,
                     role: user.role,
-                    token: 'dummy-token-' + Date.now()
+                    token: token
                 }
             });
         }

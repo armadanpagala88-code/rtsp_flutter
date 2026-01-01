@@ -11,6 +11,28 @@ class ApiService {
   // static const String baseUrl = 'http://10.0.2.2:3000/api'; // Android emulator
   // static const String baseUrl = 'http://localhost:3000/api'; // Web / iOS simulator
 
+  // JWT Token storage
+  static String? _authToken;
+
+  // Set auth token after login
+  static void setAuthToken(String token) {
+    _authToken = token;
+  }
+
+  // Clear auth token on logout
+  static void clearAuthToken() {
+    _authToken = null;
+  }
+
+  // Get headers with auth token
+  static Map<String, String> _getHeaders() {
+    final headers = {'Content-Type': 'application/json'};
+    if (_authToken != null) {
+      headers['Authorization'] = 'Bearer $_authToken';
+    }
+    return headers;
+  }
+
   /// Get all CCTV cameras
   static Future<List<Cctv>> getAllCctv({String? category, String? status}) async {
     try {
@@ -155,7 +177,7 @@ class ApiService {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/admin/cctv'),
-        headers: {'Content-Type': 'application/json'},
+        headers: _getHeaders(),
         body: json.encode(data),
       );
       
@@ -220,7 +242,14 @@ class ApiService {
         }),
       );
       
-      return json.decode(response.body);
+      final result = json.decode(response.body);
+      
+      // Save token if login successful
+      if (result['success'] == true && result['data']?['token'] != null) {
+        setAuthToken(result['data']['token']);
+      }
+      
+      return result;
     } catch (e) {
       print('Error logging in: $e');
       return {
