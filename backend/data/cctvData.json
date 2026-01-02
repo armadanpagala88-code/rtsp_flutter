@@ -12,11 +12,11 @@
       "streams": [
         {
           "quality": "preview",
-          "url": "rtsp://admin:2025-CCTVknw@172207219718.ip-dynamic.com:6560/stream2"
+          "url": "http://72.61.213.95:8888/cam01/"
         },
         {
           "quality": "main",
-          "url": "rtsp://admin:2025-CCTVknw@172207219718.ip-dynamic.com:6560/stream1"
+          "url": "http://72.61.213.95:8888/cam01/"
         }
       ],
       "status": "online",
@@ -34,11 +34,11 @@
       "streams": [
         {
           "quality": "preview",
-          "url": "rtsp://admin:2025-CCTVknw@172207219721.ip-dynamic.com:554/stream2"
+          "url": "http://72.61.213.95:8888/cam05/"
         },
         {
           "quality": "main",
-          "url": "rtsp://admin:2025-CCTVknw@172207219721.ip-dynamic.com:554/stream1"
+          "url": "http://72.61.213.95:8888/cam05/"
         }
       ],
       "status": "online",
@@ -56,11 +56,11 @@
       "streams": [
         {
           "quality": "preview",
-          "url": "rtsp://admin:2025-CCTVknw@172207219370.ip-dynamic.com:6560/stream2"
+          "url": "http://72.61.213.95:8888/cam06/"
         },
         {
           "quality": "main",
-          "url": "rtsp://admin:2025-CCTVknw@172207219370.ip-dynamic.com:6560/stream2"
+          "url": "http://72.61.213.95:8888/cam06/"
         }
       ],
       "status": "online",
@@ -78,11 +78,11 @@
       "streams": [
         {
           "quality": "preview",
-          "url": "http://72.61.213.95:8889/cam02"
+          "url": "http://72.61.213.95:8888/cam02/"
         },
         {
           "quality": "main",
-          "url": "rtsp://admin:2025-CCTVknw@172207218721.ip-dynamic.com:6555/stream1"
+          "url": "http://72.61.213.95:8888/cam02/"
         }
       ],
       "status": "online",
@@ -100,11 +100,11 @@
       "streams": [
         {
           "quality": "preview",
-          "url": "rtsp://admin:2025-CCTVknw@172207219774.ip-dynamic.com:6550/stream2"
+          "url": "http://72.61.213.95:8888/cam07/"
         },
         {
           "quality": "main",
-          "url": "rtsp://admin:2025-CCTVknw@172207219774.ip-dynamic.com:6550/stream1"
+          "url": "http://72.61.213.95:8888/cam07/"
         }
       ],
       "status": "online",
@@ -122,7 +122,7 @@
       "streams": [
         {
           "quality": "preview",
-          "url": "rtsp://72.61.213.95:8554/cam02"
+          "url": "http://72.61.213.95:8888/cam14/"
         },
         {
           "quality": "main",
@@ -144,11 +144,11 @@
       "streams": [
         {
           "quality": "preview",
-          "url": "rtsp://admin:2025-CCTVknw@172207219469.ip-dynamic.com:6550/stream2"
+          "url": "http://72.61.213.95:8888/cam08/"
         },
         {
           "quality": "main",
-          "url": "rtsp://admin:2025-CCTVknw@172207219469.ip-dynamic.com:6550/stream1"
+          "url": "http://72.61.213.95:8888/cam08/"
         }
       ],
       "status": "online",
@@ -166,11 +166,11 @@
       "streams": [
         {
           "quality": "preview",
-          "url": "rtsp://admin:2025-CCTVknw@172207219721.ip-dynamic.com:555/stream2"
+          "url": "http://72.61.213.95:8888/cam09/"
         },
         {
           "quality": "main",
-          "url": "rtsp://admin:2025-CCTVknw@172207219721.ip-dynamic.com:555/stream1"
+          "url": "http://72.61.213.95:8888/cam09/"
         }
       ],
       "status": "online",
@@ -188,11 +188,11 @@
       "streams": [
         {
           "quality": "preview",
-          "url": "http://72.61.213.95:8888/cam02"
+          "url": "http://72.61.213.95:8888/cam03/"
         },
         {
           "quality": "main",
-          "url": "http://72.61.213.95:8888/cam02"
+          "url": "http://72.61.213.95:8888/cam03/"
         }
       ],
       "status": "online",
